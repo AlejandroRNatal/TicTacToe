@@ -4,7 +4,15 @@ use io::stdin;
 fn output_board(board:&[String;9])
 {
     for i in 0..board.len() {
-        print!("{}", board[i]);
+
+        if board[i].trim() == ""
+        {
+            print!("[{}]", i);
+        }
+        else{
+            print!("[{}]", board[i]);
+        }
+        
         
         if i == 2 || i == 5 || i == 8 {
             println!("");
@@ -19,21 +27,26 @@ fn is_winning_board(board:&[String;9])->bool{
     let mut win:bool = false;
 
     // check horizontals
-    for i in 1..board.len()-1{
-        if board[i-1]==board[i] && board[i]==board[i+1]
+    let mut i: usize = 0;
+
+    while i < board.len()
+    {
+        if board[i]==board[i+1] && board[i]==board[i+2]
         {
-                if board[i] != "[]".to_string()
+                if board[i] != "".to_string()
                 {
                     win = true;
                     break;
                 }  
         }
+        i = i + 3;
     }
+
     
     // check vertical
     for i in 0..3{
         if board[i]==board[i + 3] && board[i]==board[(i+6)]{
-            if board[i] != "[]".to_string()
+            if board[i] != "".to_string()
             {   
                         win = true;
                         break;
@@ -45,7 +58,7 @@ fn is_winning_board(board:&[String;9])->bool{
     // check diagonals
     if board[0]==board[4] && board[0]==board[8]
     {
-        if board[0] != "[]".to_string()
+        if board[0] != "".to_string()
         {
             win = true;
         }
@@ -53,7 +66,7 @@ fn is_winning_board(board:&[String;9])->bool{
     
     if board[2]==board[4] && board[2]==board[6]
     {
-        if board[2] != "[]".to_string()
+        if board[2] != "".to_string()
             {
                 win = true;
             }
@@ -68,9 +81,9 @@ fn main() -> io::Result<()>
     let players:[&str; 2] = ["X", "O"];
 
     let mut board: [String; 9] = [
-                                    "[]".to_string(),"[]".to_string(),"[]".to_string(),
-                                    "[]".to_string(),"[]".to_string(),"[]".to_string(),
-                                    "[]".to_string(),"[]".to_string(),"[]".to_string()
+                                    "".to_string(),"".to_string(),"".to_string(),
+                                    "".to_string(),"".to_string(),"".to_string(),
+                                    "".to_string(),"".to_string(),"".to_string()
                                 ];
     let mut turn : usize = 0;
 
