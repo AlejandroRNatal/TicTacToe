@@ -1,4 +1,3 @@
-
 use iui::prelude::*;
 use iui::controls::{Label, Button, VerticalBox};
 use std::rc::Rc;
@@ -159,7 +158,7 @@ fn check_button_states(grid:&ButtonGrid, ui:&UI)->bool
            grid.buttons[i].text(ui) == grid.buttons[i+2].text(ui) &&
            grid.buttons[i].text(ui) != "".to_string()
         {
-                    return true
+                return true
         }
         i = i + 3;
     }
@@ -168,8 +167,8 @@ fn check_button_states(grid:&ButtonGrid, ui:&UI)->bool
     // check vertical
     for i in 0..3
     {
-        if grid.buttons[i].text(ui)== grid.buttons[i+3].text(ui) &&
-           grid.buttons[i].text(ui)==grid.buttons[i+6].text(ui) &&
+        if grid.buttons[i].text(ui) == grid.buttons[i+3].text(ui) &&
+           grid.buttons[i].text(ui) == grid.buttons[i+6].text(ui) &&
            grid.buttons[i].text(ui) != "".to_string()
         {  
                         return true
@@ -245,11 +244,11 @@ fn build_game(players:[String; 2])->Game{
 fn cli_main() -> io::Result<()>
 {
     let players:[String; 2] = [String::from("X"), String::from("O")];
-
     let mut game:Game = build_game(players);
-    // Game Loop
-    loop{
 
+    // Game Loop
+    loop
+    {
         println!("Turn #{}:", &game.turn);
         game.output_board();
         println!("");
@@ -263,7 +262,8 @@ fn cli_main() -> io::Result<()>
 
         //Should use while let, just dont know how to write it
         let mut input: String =  String::new();
-        loop {
+        loop 
+        {
             //here we catch input from user
             let parsed_index = match stdin().read_line(&mut input)
             {
@@ -341,7 +341,6 @@ fn main()
         i+=1;
     }
     
-
     // Adding controls to the box, and box to window
     vbox.append(&ui, label.clone(), LayoutStrategy::Stretchy);
 
@@ -372,7 +371,6 @@ fn main()
             println!("...Game Over...");
         }
     
-    
         // End of turn
         move || {
             // Update all the labels
@@ -396,11 +394,11 @@ fn main()
 #[cfg(test)]
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
-    // use super::*;
+    use super::*;
 
-    // #[test]
-    // fn test_is_winning() {
-    //     assert_eq!(is_winning([]]), false);
-    // }
+    #[test]
+    fn test_is_winning() {
+        // assert_eq!(is_winning([]]), false);
+    }
 
 }
