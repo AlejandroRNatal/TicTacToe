@@ -4,8 +4,8 @@ use iui::controls::{Label, Button, VerticalBox};
 use std::rc::Rc;
 use std::cell::RefCell;
 
-// use std::io;
-// use io::stdin;
+use std::io;
+use io::stdin;
 
 // #[derive(Debug)]
 // enum GameError{
@@ -14,7 +14,7 @@ use std::cell::RefCell;
 // }
 
 struct State {
-    label: String,
+    label:String,
 }
 
 #[derive( Clone)]
@@ -32,35 +32,20 @@ struct Game{
 
 impl Game{
 
-    // fn set_player_board_idx(&mut self, button: Button) -> bool
-    // {
-    //     //we need to check if valid index
-    //     if index < self.board.len() as i8 && index >= 0 && self.board[index as usize] == ""{
-    //         let player:usize = self.turn %2;
-    //         self.board[index as usize] = self.players[player].clone() ;
+    fn set_player_board_idx(&mut self, index: i8) -> bool
+    {
+        //we need to check if valid index
+        if index < self.board.len() as i8 && index >= 0 && self.board[index as usize] == ""{
+            let player:usize = self.turn %2;
+            self.board[index as usize] = self.players[player].clone() ;
 
-    //         true
-    //     }else{
-    //         println!("Invalid index [{}]!", &index);
-    //         false
-    //     }
+            true
+        }else{
+            println!("Invalid index [{}]!", &index);
+            false
+        }
         
-    // }
-
-    // fn set_player_board_idx(&mut self, index: i8) -> bool
-    // {
-    //     //we need to check if valid index
-    //     if index < self.board.len() as i8 && index >= 0 && self.board[index as usize] == ""{
-    //         let player:usize = self.turn %2;
-    //         self.board[index as usize] = self.players[player].clone() ;
-
-    //         true
-    //     }else{
-    //         println!("Invalid index [{}]!", &index);
-    //         false
-    //     }
-        
-    // }
+    }
 
 
     fn update_turn(&mut self)
@@ -83,32 +68,84 @@ impl Game{
         self.players[self.current_turn() % 2].clone()
     }
 
-    // fn current_board_state(&self)->[String;9]
-    // {
-    //     self.board.clone()
-    // }
+    fn current_board_state(&self)->[String;9]
+    {
+        self.board.clone()
+    }
+
+    fn is_winning(&mut self)->bool
+    {
+        // check horizontals
+        let mut i: usize = 0;
+
+        while i < self.board.len()
+        {
+            if self.board[i]==self.board[i+1] && self.board[i]==self.board[i+2]
+            {
+                    if self.board[i] != "".to_string()
+                    {
+                        self.win = true;
+                        break;
+                    }  
+            }
+            i = i + 3;
+        }
 
 
-    // fn output_board(&self)
-    // {
-    //     for i in 0..self.board.len() {
+        // check vertical
+        for i in 0..3{
+            if self.board[i]==self.board[i + 3] && self.board[i]==self.board[(i+6)]{
+                if self.board[i] != "".to_string()
+                {   
+                            self.win = true;
+                            break;
+                }
+            }
 
-    //         if self.board[i].trim() == ""
-    //         {
-    //             print!("[{}]", i);
-    //         }
-    //         else{
-    //             print!("[{}]", self.board[i]);
-    //         }
+        }
+
+        // check diagonals
+        if self.board[0]==self.board[4] && self.board[0]==self.board[8]
+        {
+            if self.board[0] != "".to_string()
+            {
+                self.win = true;
+            }
+        }
+
+        if self.board[2]== self.board[4] && self.board[2]==self.board[6]
+        {
+            if self.board[2] != "".to_string()
+                {
+                    self.win = true;
+                }
+        }
+
+
+            return self.win
+    }
+
+
+    fn output_board(&self)
+    {
+        for i in 0..self.board.len() {
+
+            if self.board[i].trim() == ""
+            {
+                print!("[{}]", i);
+            }
+            else{
+                print!("[{}]", self.board[i]);
+            }
             
             
-    //         if i == 2 || i == 5 || i == 8 {
-    //             println!("");
-    //         }
-    //     }
+            if i == 2 || i == 5 || i == 8 {
+                println!("");
+            }
+        }
 
-    //     println!("");
-    // }
+        println!("");
+    }
 }
 
 fn check_button_states(grid:&ButtonGrid, ui:&UI)->bool
@@ -204,7 +241,6 @@ fn build_game(players:[String; 2])->Game{
 
 }
 
-/*
 
 fn cli_main() -> io::Result<()>
 {
@@ -260,7 +296,7 @@ fn cli_main() -> io::Result<()>
     Ok(())
 
 }
-*/
+
 
 fn main()
 {
@@ -287,26 +323,21 @@ fn main()
     let label = Label::new(&ui, "");
 
     // Create a button and its callback
-    
     let mut i:i8 = 0;
 
     // let indices = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     while i < button_grid.buttons.len() as i8
     {
-        // let &index = &indices[i as usize];
         button_grid.buttons[i as usize].on_clicked(&ui, {
-            
             | button: &mut Button  | {
-                // println!("{}", index);
                 if button.text(&ui) != "X" && button.text(&ui) != "O"
                 {
                     button.set_text( &ui, String::from(game.current_player_token()).as_str());
                     game.update_turn();
                 }
-                
             }
-
         });
+
         i+=1;
     }
     
@@ -333,7 +364,7 @@ fn main()
         let ui = ui.clone();
         let mut ui_label = label.clone();
 
-        println!("Event loop turn {}", game.current_turn());
+        println!("Event Loop Turn: #{}", game.current_turn());
         
         if game.turn >= game.board.len() && check_button_states(&button_grid, &ui)
         {
@@ -343,39 +374,33 @@ fn main()
     
     
         // End of turn
-
         move || {
-            // let state = state.borrow();
-
             // Update all the labels
             ui_label.set_text(&ui, &format!("Turn #{}", game.current_turn()));
 
             if check_button_states(&button_grid, &ui)
             {
-                ui_label.set_text(&ui, format!("Player {} Won!", game.current_player()).as_str());
-                // sleep(5)
-                ui.quit();
+                ui_label.set_text(&ui, format!("Player {} Won!",
+                                  game.current_player()).as_str());
+                // ui.quit();
             }
         }
     
-            
-            
-        
-
     });
+
     event_loop.run(&ui);
 
 }
 
 
-// #[cfg(test)]
-// mod tests {
-//     // Note this useful idiom: importing names from outer (for mod tests) scope.
-//     use super::*;
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    // use super::*;
 
-//     // #[test]
-//     // fn test_is_winning() {
-//     //     assert_eq!(is_winning([]]), false);
-//     // }
+    // #[test]
+    // fn test_is_winning() {
+    //     assert_eq!(is_winning([]]), false);
+    // }
 
-// }
+}
