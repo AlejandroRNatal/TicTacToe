@@ -1,5 +1,5 @@
 use iui::prelude::*;
-use iui::controls::{Label, Button, VerticalBox};
+use iui::controls::{Label, Button, VerticalBox,LayoutGrid,GridExpand,GridAlignment};
 use std::rc::Rc;
 use std::cell::RefCell;
 
@@ -16,7 +16,7 @@ struct State {
     label:String,
 }
 
-#[derive( Clone)]
+#[derive(Clone)]
 struct ButtonGrid{
     buttons:[Button;9],
 }
@@ -34,7 +34,10 @@ impl Game{
     fn set_player_board_idx(&mut self, index: i8) -> bool
     {
         //we need to check if valid index
-        if index < self.board.len() as i8 && index >= 0 && self.board[index as usize] == ""{
+        if index < self.board.len() as i8 &&
+           index >= 0 &&
+           self.board[index as usize] == ""
+        {
             let player:usize = self.turn %2;
             self.board[index as usize] = self.players[player].clone() ;
 
@@ -49,12 +52,12 @@ impl Game{
 
     fn update_turn(&mut self)
     {
-        self.turn = self.turn + 1;
+        self.turn += 1;
     }
 
-    fn current_turn(&self)->usize
+    fn current_turn(&self)-> i8
     {
-        self.turn
+        self.turn as i8
     }
 
     fn current_player(&self)->usize
@@ -64,7 +67,7 @@ impl Game{
 
     fn current_player_token(&self)->String
     {
-        self.players[self.current_turn() % 2].clone()
+        self.players[self.current_turn() as usize % 2].clone()
     }
 
     fn current_board_state(&self)->[String;9]
@@ -72,56 +75,66 @@ impl Game{
         self.board.clone()
     }
 
-    fn is_winning(&mut self)->bool
+    fn check_verticals_win_condition(&self)-> bool
     {
-        // check horizontals
+        for i in 0..3
+        {
+            if self.board[i] == self.board[i + 3] &&
+               self.board[i] == self.board[i + 6] &&
+               self.board[i] != "".to_string()
+            { 
+                            return true
+            }
+
+        }
+
+        return  false
+    }
+
+    fn check_diagonals_win_condition(&self) -> bool {
+        // check diagonals
+        if self.board[0] == self.board[4] &&
+           self.board[0] == self.board[8] &&
+           self.board[0] != "".to_string()
+        {
+                return true
+            
+        }
+
+        if self.board[2] == self.board[4] &&
+           self.board[2] == self.board[6] &&
+           self.board[2] != "".to_string()
+        {
+                   return true  
+        }
+
+        return false
+    }
+
+    fn check_horizontals_win_condition(&self) -> bool
+    {
         let mut i: usize = 0;
 
         while i < self.board.len()
         {
-            if self.board[i]==self.board[i+1] && self.board[i]==self.board[i+2]
+            if self.board[i] == self.board[i+1] &&
+               self.board[i] == self.board[i+2] &&
+               self.board[i] != "".to_string()
             {
-                    if self.board[i] != "".to_string()
-                    {
-                        self.win = true;
-                        break;
-                    }  
+                        return true
             }
+
             i = i + 3;
         }
 
+        return false
+    }
 
-        // check vertical
-        for i in 0..3{
-            if self.board[i]==self.board[i + 3] && self.board[i]==self.board[(i+6)]{
-                if self.board[i] != "".to_string()
-                {   
-                            self.win = true;
-                            break;
-                }
-            }
-
-        }
-
-        // check diagonals
-        if self.board[0]==self.board[4] && self.board[0]==self.board[8]
-        {
-            if self.board[0] != "".to_string()
-            {
-                self.win = true;
-            }
-        }
-
-        if self.board[2]== self.board[4] && self.board[2]==self.board[6]
-        {
-            if self.board[2] != "".to_string()
-                {
-                    self.win = true;
-                }
-        }
-
-
-            return self.win
+    fn is_winning(&self)->bool
+    {
+        return self.check_diagonals_win_condition() & 
+               self.check_horizontals_win_condition() &
+               self.check_verticals_win_condition()
     }
 
 
@@ -144,6 +157,11 @@ impl Game{
         }
 
         println!("");
+    }
+
+    fn max_turns(&self) -> i8
+    {
+        self.board.len() as i8
     }
 }
 
@@ -197,29 +215,29 @@ fn check_button_states(grid:&ButtonGrid, ui:&UI)->bool
 fn build_button_grid(ui:&UI)->ButtonGrid
 {
 
-    let idx_0 = format!("{}", 0);
-    let idx_1 = format!("{}", 1);
-    let idx_2 = format!("{}", 2);
-    let idx_3 = format!("{}", 3);
+    let idx_0 = format!("{}", 0).as_str();
+    let idx_1 = format!("{}", 1).as_str();
+    let idx_2 = format!("{}", 2).as_str();
+    let idx_3 = format!("{}", 3).as_str();
 
-    let idx_4 = format!("{}", 4);
-    let idx_5 = format!("{}", 5);
-    let idx_6 = format!("{}", 6);
-    let idx_7 = format!("{}", 7);
+    let idx_4 = format!("{}", 4).as_str();
+    let idx_5 = format!("{}", 5).as_str();
+    let idx_6 = format!("{}", 6).as_str();
+    let idx_7 = format!("{}", 7).as_str();
 
-    let idx_8 = format!("{}", 8);
+    let idx_8 = format!("{}", 8).as_str();
 
     ButtonGrid{
         buttons:[
-            Button::new(&ui, idx_0.as_str()),
-            Button::new(&ui, idx_1.as_str()),
-            Button::new(&ui, idx_2.as_str()),
-            Button::new(&ui, idx_3.as_str()),
-            Button::new(&ui, idx_4.as_str()),
-            Button::new(&ui, idx_5.as_str()),
-            Button::new(&ui, idx_6.as_str()),
-            Button::new(&ui, idx_7.as_str()),
-            Button::new(&ui, idx_8.as_str()),
+            Button::new(&ui, idx_0),
+            Button::new(&ui, idx_1),
+            Button::new(&ui, idx_2),
+            Button::new(&ui, idx_3),
+            Button::new(&ui, idx_4),
+            Button::new(&ui, idx_5),
+            Button::new(&ui, idx_6),
+            Button::new(&ui, idx_7),
+            Button::new(&ui, idx_8),
         ]
     }
 }
@@ -253,7 +271,7 @@ fn cli_main() -> io::Result<()>
         game.output_board();
         println!("");
 
-        if game.turn >= game.board.len() && !game.win
+        if game.current_turn() >= game.max_turns() && !game.is_winning()
         {
             println!("No Winner Possible!\n\n");
             println!("...Game Over...");
@@ -280,11 +298,11 @@ fn cli_main() -> io::Result<()>
             }
         }
 
-        println!("Player {} Input position was: {}\n", (game.turn % 2 ) + 1, &input);
+        println!("Player {} Input position was: {}\n", game.current_player(), &input);
 
         if game.is_winning()
         {
-            println!("Player {} wins!",  (game.turn % 2 ) + 1);
+            println!("Player {} wins!",  game.current_player());
             break;
         }
 
@@ -316,7 +334,10 @@ fn main()
     let mut win = Window::new(&ui, "Tic Tac Toe", 200, 100, WindowType::NoMenubar);
 
     // Create a vertical layout to hold the controls
+    let mut layout_grid = LayoutGrid::new(&ui);
     let mut vbox = VerticalBox::new(&ui);
+
+    layout_grid.set_padded(&ui, true);
     vbox.set_padded(&ui, true);
 
     // Create a new label.
@@ -325,7 +346,6 @@ fn main()
     // Create a button and its callback
     let mut i:i8 = 0;
 
-    // let indices = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     while i < button_grid.buttons.len() as i8
     {
         button_grid.buttons[i as usize].on_clicked(&ui, {
@@ -342,16 +362,34 @@ fn main()
     }
     
     // Adding controls to the box, and box to window
-    vbox.append(&ui, label.clone(), LayoutStrategy::Stretchy);
+    // vbox.append(&ui, label.clone(), LayoutStrategy::Stretchy);
+    layout_grid.append(&ui, label.clone(),0 ,10, 5,5,GridExpand::Both,GridAlignment::Start,GridAlignment::Center);
+    
+    let mut i:i8 = 0;
 
+    while i < button_grid.buttons.len() as i8
+    {
+        vbox.append(&ui,  button_grid.buttons[i as usize].clone(), LayoutStrategy::Stretchy);
+        i+=1;
+    }
+
+    let mut i:i32 = 0;
+    
     for button in button_grid.buttons.iter()
     {
-        vbox.append(&ui, button.clone(), LayoutStrategy::Compact);
+        // vbox.append(&ui, button.clone(), LayoutStrategy::Compact);
+        layout_grid.append(&ui, button.clone(),
+                          1 + i ,10 + 10 * (i + 1),
+                          5,5,
+                          GridExpand::Both,
+                          GridAlignment::Center,
+                          GridAlignment::Center);
+        i+=1;
     }
     
 
-    win.set_child(&ui, vbox);
-
+    // win.set_child(&ui, vbox);
+    win.set_child(&ui, layout_grid);
     // Show the window
     win.show(&ui);
 
@@ -365,7 +403,7 @@ fn main()
 
         println!("Event Loop Turn: #{}", game.current_turn());
         
-        if game.turn >= game.board.len() && check_button_states(&button_grid, &ui)
+        if game.current_turn()  >= game.max_turns() && check_button_states(&button_grid, &ui)
         {
             println!("No Winner Possible!\n\n");
             println!("...Game Over...");
