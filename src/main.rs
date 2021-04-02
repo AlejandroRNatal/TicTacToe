@@ -1,5 +1,5 @@
 use iui::prelude::*;
-use iui::controls::{Label, Button, VerticalBox,LayoutGrid,GridExpand,GridAlignment};
+use iui::controls::{Label, Button, VerticalBox,HorizontalBox,LayoutGrid,GridExpand,GridAlignment};
 use std::rc::Rc;
 use std::cell::RefCell;
 
@@ -215,29 +215,27 @@ fn check_button_states(grid:&ButtonGrid, ui:&UI)->bool
 fn build_button_grid(ui:&UI)->ButtonGrid
 {
 
-    let idx_0 = format!("{}", 0).as_str();
-    let idx_1 = format!("{}", 1).as_str();
-    let idx_2 = format!("{}", 2).as_str();
-    let idx_3 = format!("{}", 3).as_str();
-
-    let idx_4 = format!("{}", 4).as_str();
-    let idx_5 = format!("{}", 5).as_str();
-    let idx_6 = format!("{}", 6).as_str();
-    let idx_7 = format!("{}", 7).as_str();
-
-    let idx_8 = format!("{}", 8).as_str();
+    let idx_0 = format!("{}", 0);
+    let idx_1 = format!("{}", 1);
+    let idx_2 = format!("{}", 2);
+    let idx_3 = format!("{}", 3);
+    let idx_4 = format!("{}", 4);
+    let idx_5 = format!("{}", 5);
+    let idx_6 = format!("{}", 6);
+    let idx_7 = format!("{}", 7);
+    let idx_8 = format!("{}", 8);
 
     ButtonGrid{
         buttons:[
-            Button::new(&ui, idx_0),
-            Button::new(&ui, idx_1),
-            Button::new(&ui, idx_2),
-            Button::new(&ui, idx_3),
-            Button::new(&ui, idx_4),
-            Button::new(&ui, idx_5),
-            Button::new(&ui, idx_6),
-            Button::new(&ui, idx_7),
-            Button::new(&ui, idx_8),
+            Button::new(&ui, idx_0.as_str()),
+            Button::new(&ui, idx_1.as_str()),
+            Button::new(&ui, idx_2.as_str()),
+            Button::new(&ui, idx_3.as_str()),
+            Button::new(&ui, idx_4.as_str()),
+            Button::new(&ui, idx_5.as_str()),
+            Button::new(&ui, idx_6.as_str()),
+            Button::new(&ui, idx_7.as_str()),
+            Button::new(&ui, idx_8.as_str()),
         ]
     }
 }
@@ -318,7 +316,6 @@ fn cli_main() -> io::Result<()>
 
 fn main()
 {
-
     //init game board
     let players:[String; 2] = [String::from("X"),String::from("O")];
     let mut game = Box::new(build_game(players));
@@ -336,6 +333,7 @@ fn main()
     // Create a vertical layout to hold the controls
     let mut layout_grid = LayoutGrid::new(&ui);
     let mut vbox = VerticalBox::new(&ui);
+    // let mut hbox = HorizontalBox::new(&ui);
 
     layout_grid.set_padded(&ui, true);
     vbox.set_padded(&ui, true);
@@ -365,13 +363,18 @@ fn main()
     // vbox.append(&ui, label.clone(), LayoutStrategy::Stretchy);
     layout_grid.append(&ui, label.clone(),0 ,10, 5,5,GridExpand::Both,GridAlignment::Start,GridAlignment::Center);
     
-    let mut i:i8 = 0;
+    // let mut i:i8 = 0;
 
-    while i < button_grid.buttons.len() as i8
-    {
-        vbox.append(&ui,  button_grid.buttons[i as usize].clone(), LayoutStrategy::Stretchy);
-        i+=1;
-    }
+    // while i < button_grid.buttons.len() as i8
+    // {
+    //     if i  % 2 == 0{
+    //         //it's a row therefore we add the hbox to a vbox
+    //         vbox.append(&ui, hbox.clone(), LayoutStrategy::Stretchy);
+    //         let mut hbox = HorizontalBox::new(&ui);
+    //     }
+    //     hbox.append(&ui,  button_grid.buttons[i as usize].clone(), LayoutStrategy::Stretchy);
+    //     i+=1;
+    // }
 
     let mut i:i32 = 0;
     
@@ -379,7 +382,7 @@ fn main()
     {
         // vbox.append(&ui, button.clone(), LayoutStrategy::Compact);
         layout_grid.append(&ui, button.clone(),
-                          1 + i ,10 + 10 * (i + 1),
+                          1, 10 * (i + 1),
                           5,5,
                           GridExpand::Both,
                           GridAlignment::Center,
