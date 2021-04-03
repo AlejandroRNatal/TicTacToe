@@ -29,7 +29,9 @@ jobs:
         rust-version: stable
         
     - name: Install Dependencies
-      run: sudo apt-get install libgtk-3-dev
+      run: |
+        sudo apt-get install libgtk-3-dev
+        echo ::set-env name=MYTEST::$(date "+%Y.%m.%d")
       
     - name: Build | Compile
       run: cargo check
@@ -40,8 +42,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ github.ref }}.${{MYTEST}}
+        release_name: Release ${{ github.ref }}.${{MYTEST}}
         body: |
           Changes in this Release
           - First Change
