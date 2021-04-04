@@ -29,11 +29,11 @@ jobs:
         rust-version: stable
         
     - name: Set env
-      run:  echo ::set-env name=MYTEST::$(date "+%Y.%m.%d")
+      run:  echo name=MYTEST::$(date "+%Y.%m.%d") >> $GITHUB_ENV
       
     - name: Define Env Vars
       run: |
-          echo MYTEST=${MYTEST}
+          echo MYTEST=${MYTEST} >> $GITHUB_ENV
           
     - name: Install Dependencies
       run: |
@@ -48,8 +48,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ github.ref }}.${MYTEST}
-        release_name: Release ${{ github.ref }}.${MYTEST}
+        tag_name: ${{ github.ref }}.${env.MYTEST}
+        release_name: Release ${{ github.ref }}.${env.MYTEST}
         body: |
           Changes in this Release
           - First Change
