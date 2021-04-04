@@ -29,11 +29,9 @@ jobs:
         rust-version: stable
         
     - name: Set env
-      run:  echo name=MYTEST::$(date "+%Y.%m.%d") >> $GITHUB_ENV
+      run:  echo MYTEST=$(date "+%Y.%m.%d") >> $GITHUB_ENV
       
-    - name: Define Env Vars
-      run: |
-          echo MYTEST=${MYTEST} >> $GITHUB_ENV
+    
           
     - name: Install Dependencies
       run: |
