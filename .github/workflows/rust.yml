@@ -28,11 +28,13 @@ jobs:
       with:
         rust-version: stable
         
+    - name: Set env
+      run:  echo ::set-env name=MYTEST::$(date "+%Y.%m.%d")
+        
     - name: Install Dependencies
       run: |
         sudo apt-get install libgtk-3-dev
-        echo ::set-env name=MYTEST::$(date "+%Y.%m.%d")
-      
+          
     - name: Build | Compile
       run: cargo check
           
